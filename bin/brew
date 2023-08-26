@@ -277,8 +277,12 @@ fi
 
 # filter the user environment
 PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+# 2023-08-25 huy
+PATH="${HOME}/.rbenv/shims:${PATH}"
 
-FILTERED_ENV=()
+# 2023-08-25 huy
+#FILTERED_ENV=()
+FILTERED_ENV=("RBENV_VERSION=${RBENV_VERSION-}")
 ENV_VAR_NAMES=(
   HOME SHELL PATH TERM TERMINFO TERMINFO_DIRS COLUMNS DISPLAY LOGNAME USER CI SSH_AUTH_SOCK SUDO_ASKPASS
   http_proxy https_proxy ftp_proxy no_proxy all_proxy HTTPS_PROXY FTP_PROXY ALL_PROXY

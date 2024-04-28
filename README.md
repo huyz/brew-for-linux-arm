@@ -1,4 +1,83 @@
-# Homebrew
+# Homebrew for Linux ARM
+
+> [!CAUTION] **This Fork**
+> Since this is an unsupported hack, this may eventually break.
+
+> ## How to use
+>
+> All this fork does is _hack_ to allow ruby installed by rbenv to be used instead of `/usr/bin/ruby`:
+> [GitHub commit - Allow ruby from rbenv to take precedence](https://github.com/huyz/brew-for-linux-arm/commit/18f7e3d5a54078201430fade8ab76fadd9b282ea):
+>
+> ```bash
+> # filter the user environment
+> PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+> PATH="${HOME}/.rbenv/shims:${PATH}"
+>
+> #FILTERED_ENV=()
+> FILTERED_ENV=("RBENV_VERSION=${RBENV_VERSION-}")
+> ```
+>
+> ### First-time Installation
+>
+> To install this Homebrew, you'll first have to install `rbenv` (e.g. Ubuntu 22.04's version from `apt` is ok):
+>
+> ```shell
+> git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build  # apt's ruby-build is too out of date
+> #sudo apt install libyaml-dev
+> #sudo dnf install libyaml-devel
+> rbenv install 3.3.3
+> rbenv shell 3.3.3
+> export HOMEBREW_BREW_GIT_REMOTE=https://github.com/huyz/brew-for-linux-arm
+> export HOMEBREW_DEVELOPER=1
+> /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | sed '532s/abort/warn/')"
+> ```
+>
+> You'll also need to add the core tap back (nowadays deprecated):
+>
+> ```shell
+> brew tap homebrew/core
+> ```
+>
+> After installation, to run `brew` you should probably create a `brew` wrapper that contains:
+>
+> ```bash
+> #!/bin/bash
+> [[ -d ~/.rbenv/bin ]] && export PATH="~/.rbenv/bin:$PATH"
+> if command -v rbenv &>/dev/null; then
+>   export PATH="${PATH//$(rbenv root)\/shims:/}"
+>   eval "$(rbenv init -)"
+>   rbenv shell 3.3.3
+> else
+>   echo "Warning: rbenv not found" >&2
+> fi
+> HOMEBREW_BREW_GIT_REMOTE=https://github.com/huyz/brew-for-linux-arm HOMEBREW_DEVELOPER=1 exec /home/linuxbrew/.linuxbrew/bin/brew "$@"
+> ```
+>
+> ### Upgrading ruby
+>
+> Occasionally, you may get an error from `brew upgrade` because the ruby version required by
+Homebrew will be bumped upstream. To upgrade, you can do:
+> ```bash
+> cd "$(rbenv root)"/plugins/ruby-build
+> git pull origin master
+> rbenv install 3.3.3
+> ```
+> And you should update your `brew` wrapper that you created as above:
+> ```bash
+> sed -i 's/^\([[:space:]]*rbenv shell\) .*/\1 3.3.3/' "$(which brew)"
+> ```
+>
+> You can then `brew upgrade` as usual.
+>
+> ## Caveats
+>
+> [!IMPORTANT] **Partial solution**
+> Of course, this is only half the battle. Many official formulas won't work because they weren't
+> written with Linux ARM in mind. (For example, as of 2024-07-19, the rust formula will fail to build.)
+
+> [!WARNING] I'll try to regularly rebase my changes on top of the latest upstream commits, and then
+> I'll force push the new rebased commits. So you might need to `reset --hard` after fetching
+> updates for this repo
 
 [![GitHub release](https://img.shields.io/github/release/Homebrew/brew.svg)](https://github.com/Homebrew/brew/releases)
 [![License](https://img.shields.io/github/license/Homebrew/brew)](https://github.com/Homebrew/brew/blob/master/LICENSE.txt)

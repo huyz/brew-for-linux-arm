@@ -1,5 +1,9 @@
 # Homebrew for Linux ARM
 
+> [!NOTE] 2025-08-04 Time to retire this repo. The official Homebrew for Linux is now viable
+> for ARM, even if not yet officially supported. There are even lots of bottles
+> already.
+
 > [!CAUTION] **This Fork**
 > Since this is an unsupported hack, this may eventually break.
 
